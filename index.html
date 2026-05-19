@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPP広告運用ツール — 設定</title>
+<style>
+  :root {
+    --brand: #1a56db;
+    --brand-light: #e8f0fe;
+    --brand-dark: #1a1a2e;
+    --danger: #cc3333;
+    --success: #227a3e;
+    --warn: #cc5500;
+    --bg: #f5f7fa;
+    --card: #fff;
+    --border: #dde2ea;
+    --text: #333;
+    --text-sub: #666;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Yu Gothic', 'Hiragino Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+  /* ---- header ---- */
+  .header { background: var(--brand-dark); color: #fff; padding: 16px 32px; display: flex; align-items: center; gap: 16px; }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .header .store-badge { background: var(--brand); padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+
+  /* ---- layout ---- */
+  .layout { display: flex; max-width: 1200px; margin: 0 auto; padding: 24px 16px; gap: 24px; }
+  .sidebar { width: 220px; flex-shrink: 0; }
+  .main { flex: 1; min-width: 0; }
+
+  /* ---- sidebar nav ---- */
+  .nav-group { margin-bottom: 20px; }
+  .nav-group-label { font-size: 11px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 12px 6px; }
+  .nav-item { display: block; padding: 8px 12px; border-radius: var(--radius); cursor: pointer; font-size: 13px; color: var(--text); text-decoration: none; transition: background .15s; }
+  .nav-item:hover { background: var(--brand-light); }
+  .nav-item.active { background: var(--brand); color: #fff; font-weight: 600; }
+
+  /* ---- card ---- */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-header h2 { font-size: 15px; font-weight: 700; }
+  .card-body { padding: 20px; }
+  .card-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+  /* ---- form ---- */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--text-sub); }
+  .form-group .hint { font-size: 11px; color: #999; }
+  input[type="number"], input[type="text"], select {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;
+    font-family: inherit; outline: none; transition: border-color .15s;
+  }
+  input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 2px rgba(26,86,219,.15); }
+  input[type="number"] { font-family: 'Consolas', monospace; }
+
+  /* ---- toggle ---- */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-label { font-size: 13px; }
+  .toggle-label small { display: block; color: var(--text-sub); font-size: 11px; margin-top: 2px; }
+  .toggle { position: relative; width: 42px; height: 24px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle .slider { position: absolute; inset: 0; background: #ccc; border-radius: 24px; cursor: pointer; transition: .2s; }
+  .toggle .slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: .2s; }
+  .toggle input:checked + .slider { background: var(--brand); }
+  .toggle input:checked + .slider::before { transform: translateX(18px); }
+
+  /* ---- tag / badge ---- */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge-blue { background: var(--brand-light); color: var(--brand); }
+  .badge-green { background: #e6f4ea; color: var(--success); }
+  .badge-orange { background: #fff3e0; color: var(--warn); }
+  .badge-red { background: #fce8e8; color: var(--danger); }
+
+  /* ---- button ---- */
+  .btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: background .15s; font-family: inherit; }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: #1548b8; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { background: #f5f5f5; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+  /* ---- table ---- */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tbl th { background: #f8f9fb; padding: 8px 10px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text-sub); border-bottom: 2px solid var(--border); }
+  .tbl td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
+  .tbl tr:hover td { background: #fafbfc; }
+  .tbl input[type="number"] { width: 80px; padding: 4px 6px; font-size: 12px; }
+  .tbl select { padding: 4px 6px; font-size: 12px; }
+
+  /* ---- calendar grid ---- */
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-header { font-size: 11px; font-weight: 600; text-align: center; color: var(--text-sub); padding: 4px; }
+  .cal-day { border: 1px solid var(--border); border-radius: 6px; padding: 6px; min-height: 60px; font-size: 11px; cursor: pointer; transition: border-color .15s; }
+  .cal-day:hover { border-color: var(--brand); }
+  .cal-day .day-num { font-weight: 700; margin-bottom: 4px; }
+  .cal-day .day-event { font-size: 10px; color: var(--warn); }
+  .cal-day .day-strategy { margin-top: 2px; }
+  .cal-day .day-budget { font-size: 10px; color: #1a56db; margin-top: 2px; font-weight: 600; }
+  .cal-day.is-normal .day-strategy { color: var(--text-sub); }
+  .cal-day.is-up .day-strategy { color: var(--brand); font-weight: 600; }
+  .cal-day.is-max .day-strategy { color: var(--danger); font-weight: 700; }
+  .cal-day.is-today { border-color: var(--brand); border-width: 2px; background: var(--brand-light); }
+  .cal-day.is-empty { border: none; background: transparent; }
+
+  /* ---- sections ---- */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ---- timeslot visual ---- */
+  .timeslot-bar { display: flex; height: 36px; border-radius: 6px; overflow: hidden; margin: 12px 0; }
+  .timeslot-bar > div { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #fff; }
+  .ts-morning { background: #90caf9; flex: 1; }
+  .ts-afternoon { background: #42a5f5; flex: 0.5; }
+  .ts-evening { background: #1565c0; flex: 0.5; }
+
+  /* ---- product override list ---- */
+  .override-card { border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 10px; }
+  .override-card .oc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .override-card .oc-header strong { font-size: 13px; }
+  .override-kw { margin-left: 16px; padding: 8px 0; border-top: 1px dashed #e0e0e0; display: flex; align-items: center; gap: 12px; font-size: 12px; }
+
+  /* ---- exclude list ---- */
+  .excl-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+  .excl-item .excl-id { font-family: 'Consolas', monospace; color: var(--brand); }
+  .excl-item .excl-reason { color: var(--text-sub); font-size: 11px; }
+
+  /* ---- status bar ---- */
+  .status-bar { display: flex; gap: 16px; padding: 12px 20px; background: #f8f9fb; border-radius: var(--radius); margin-bottom: 20px; }
+  .status-item { display: flex; flex-direction: column; gap: 2px; }
+  .status-item .s-label { font-size: 11px; color: var(--text-sub); }
+  .status-item .s-value { font-size: 16px; font-weight: 700; }
+  .status-item .s-value.green { color: var(--success); }
+  .status-item .s-value.orange { color: var(--warn); }
+  .status-item .s-value.red { color: var(--danger); }
+
+  /* ---- dry-run banner ---- */
+  .dry-run-banner { background: #fff3e0; border: 1px solid #ffcc02; border-radius: var(--radius); padding: 10px 16px; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; font-size: 13px; }
+  .dry-run-banner strong { color: var(--warn); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>RPP広告運用ツール</h1>
+  <span class="store-badge">百福堂（nagara-shop）</span>
+  <span style="margin-left:auto; font-size:12px; opacity:.7;">v3.2</span>
+</div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-label">ダッシュボード</div>
+      <a class="nav-item" onclick="showSection('overview')" id="nav-overview">概要・ステータス</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">基本設定</div>
+      <a class="nav-item active" onclick="showSection('general')" id="nav-general">全般・ROAS目標</a>
+      <a class="nav-item" onclick="showSection('strategy')" id="nav-strategy">戦略倍率</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">スケジュール</div>
+      <a class="nav-item" onclick="showSection('calendar')" id="nav-calendar">戦略カレンダー</a>
+      <a class="nav-item" onclick="showSection('timeslot')" id="nav-timeslot">時間帯設定</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">予算</div>
+      <a class="nav-item" onclick="showSection('budget')" id="nav-budget">月予算・日予算配分</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">商品・KW管理</div>
+      <a class="nav-item" onclick="showSection('overrides')" id="nav-overrides">商品別オーバーライド</a>
+      <a class="nav-item" onclick="showSection('exclude')" id="nav-exclude">除外商品</a>
+      <a class="nav-item" onclick="showSection('urllist')" id="nav-urllist">URLリスト</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">KWルール</div>
+      <a class="nav-item" onclick="showSection('kwrules')" id="nav-kwrules">KW CPC制約</a>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+
+    <!-- ==================== Overview ==================== -->
+    <div class="section" id="sec-overview">
+      <div class="dry-run-banner">
+        <strong>⚠ DRY RUN モード</strong> — 変更計画のみ出力。RMSへの実アップロードは行いません
+      </div>
+      <div class="status-bar">
+        <div class="status-item"><span class="s-label">RPP最適化</span><span class="s-value green">稼働中</span></div>
+        <div class="status-item"><span class="s-label">今日の戦略</span><span class="s-value orange">UP</span></div>
+        <div class="status-item"><span class="s-label">目標ROAS</span><span class="s-value">500%</span></div>
+        <div class="status-item"><span class="s-label">月予算</span><span class="s-value">¥300,000</span></div>
+        <div class="status-item"><span class="s-label">消化率</span><span class="s-value green">62%</span></div>
+        <div class="status-item"><span class="s-label">除外商品</span><span class="s-value">12件</span></div>
+        <div class="status-item"><span class="s-label">最終実行</span><span class="s-value" style="font-size:13px">5/19 14:00</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>直近の実行結果</h2></div>
+        <div class="card-body">
+          <table class="tbl">
+            <thead><tr><th>日時</th><th>種別</th><th>変更数</th><th>除外数</th><th>ステータス</th></tr></thead>
+            <tbody>
+              <tr><td>5/19 14:00</td><td>商品CPC</td><td>23件</td><td>2件</td><td><span class="badge badge-green">成功</span></td></tr>
+              <tr><td>5/19 13:00</td><td>KW CPC</td><td>48件</td><td>—</td><td><span class="badge badge-green">成功</span></td></tr>
+              <tr><td>5/19 12:00</td><td>KW CPC</td><td>51件</td><td>—</td><td><span class="badge badge-green">成功</span></td></tr>
+              <tr><td>5/19 08:00</td><td>商品CPC</td><td>19件</td><td>1件</td><td><span class="badge badge-green">成功</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== General ==================== -->
+    <div class="section active" id="sec-general">
+      <div class="card">
+        <div class="card-header">
+          <h2>全般設定</h2>
+          <span class="badge badge-green">有効</span>
+        </div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-label">RPP最適化を有効にする<small>無効にするとすべてのCPC自動調整が停止します</small></div>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-label">Dry Run モード<small>有効にすると変更計画のみ出力し、RMSへの実アップロードは行いません</small></div>
+            <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>目標ROAS（店舗全体）</h2></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>目標ROAS（%）</label>
+              <input type="number" value="500" min="100" step="50">
+              <span class="hint">店舗全体の基準値。商品別オーバーライドで個別設定可能</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>CPC範囲</h2></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>商品CPC 下限（円）</label>
+              <input type="number" value="20" min="20">
+              <span class="hint">RMS最低入札: 20円</span>
+            </div>
+            <div class="form-group">
+              <label>商品CPC 上限（円）</label>
+              <input type="number" value="200" min="20" max="10000">
+            </div>
+            <div class="form-group">
+              <label>KW CPC 下限（円）</label>
+              <input type="number" value="40" min="40">
+              <span class="hint">RMS最低入札: 40円</span>
+            </div>
+            <div class="form-group">
+              <label>KW CPC 上限（円）</label>
+              <input type="number" value="300" min="40" max="10000">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>CPC制御</h2></div>
+        <div class="card-body">
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label>最大変更幅（比率）</label>
+              <input type="number" value="0.5" min="0.1" max="1.0" step="0.1">
+              <span class="hint">1回のCPC更新で変更できる上限（0.5 = ±50%）</span>
+            </div>
+            <div class="form-group">
+              <label>下げ強化倍率（ROAS不良時）</label>
+              <input type="number" value="1.5" min="1.0" step="0.1">
+              <span class="hint">ROAS達成率50%未満の商品に適用。通常の下げ幅をこの倍率で強化</span>
+            </div>
+            <div class="form-group">
+              <label>下げ強化倍率（ROAS 0%時）</label>
+              <input type="number" value="2.0" min="1.0" step="0.1">
+              <span class="hint">売上ゼロの商品に適用。通常の下げ幅をこの倍率で強化</span>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <div class="toggle-row">
+              <div class="toggle-label">変更対象50%上限<small>全商品の50%以上に変更がかかる場合はアラート停止</small></div>
+              <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">12時間ROASブレーキ<small>720h ROASが上げ判定でも12h ROASが急落していれば上げを停止</small></div>
+              <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>判定条件</h2></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>閾値クリック数</label>
+              <input type="number" value="10" min="1">
+              <span class="hint">この数未満の商品・KWはCPC調整の対象外</span>
+            </div>
+            <div class="form-group">
+              <label>閾値日数</label>
+              <input type="number" value="7" min="1">
+              <span class="hint">登録からこの日数未満の商品・KWは対象外</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer" style="background:#fff; border:1px solid var(--border); border-radius:var(--radius); margin-top:-1px;">
+        <button class="btn btn-outline">リセット</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </div>
+
+    <!-- ==================== Strategy ==================== -->
+    <div class="section" id="sec-strategy">
+      <div class="card">
+        <div class="card-header"><h2>戦略倍率（商品CPC用）</h2></div>
+        <div class="card-body">
+          <p style="font-size:12px; color:var(--text-sub); margin-bottom:16px;">商品CPC調整時に適用する倍率。上げ判定: CPC × 倍率、下げ判定: CPC × (1/倍率)</p>
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label>Normal</label>
+              <input type="number" value="1.0" step="0.05" min="0.5" max="3.0">
+              <span class="hint">通常日。CPC変更なしに近い</span>
+            </div>
+            <div class="form-group">
+              <label>Up</label>
+              <input type="number" value="1.1" step="0.05" min="0.5" max="3.0">
+              <span class="hint">イベント初日・告知期間</span>
+            </div>
+            <div class="form-group">
+              <label>Max</label>
+              <input type="number" value="1.3" step="0.05" min="0.5" max="3.0">
+              <span class="hint">ピーク日・5/0日重複</span>
+            </div>
+          </div>
+
+          <div style="margin-top:20px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
+            <strong>計算例（現在CPC: 50円）</strong><br>
+            Normal(1.0): 上げ→50円 / 下げ→50円<br>
+            Up(1.1): 上げ→55円 / 下げ→45円<br>
+            Max(1.3): 上げ→65円 / 下げ→38円
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>戦略倍率（KW CPC用）</h2></div>
+        <div class="card-body">
+          <p style="font-size:12px; color:var(--text-sub); margin-bottom:16px;">KW CPC調整時に適用する倍率。KWは商品CPCよりアグレッシブな設定が可能</p>
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label>Normal</label>
+              <input type="number" value="1.0" step="0.05" min="0.5" max="3.0">
+              <span class="hint">通常日。CPC変更なしに近い</span>
+            </div>
+            <div class="form-group">
+              <label>Up</label>
+              <input type="number" value="1.15" step="0.05" min="0.5" max="3.0">
+              <span class="hint">イベント初日・告知期間</span>
+            </div>
+            <div class="form-group">
+              <label>Max</label>
+              <input type="number" value="1.4" step="0.05" min="0.5" max="3.0">
+              <span class="hint">ピーク日・5/0日重複</span>
+            </div>
+          </div>
+
+          <div style="margin-top:20px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
+            <strong>計算例（現在CPC: 80円）</strong><br>
+            Normal(1.0): 上げ→80円 / 下げ→80円<br>
+            Up(1.15): 上げ→92円 / 下げ→70円<br>
+            Max(1.4): 上げ→112円 / 下げ→57円
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer" style="background:#fff; border:1px solid var(--border); border-radius:var(--radius);">
+        <button class="btn btn-outline">リセット</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </div>
+
+    <!-- ==================== Calendar ==================== -->
+    <div class="section" id="sec-calendar">
+      <div class="card">
+        <div class="card-header">
+          <h2>戦略カレンダー — 2026年5月</h2>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-sm btn-outline">◀ 前月</button>
+            <button class="btn btn-sm btn-outline">翌月 ▶</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="display:flex; gap:12px; margin-bottom:12px; font-size:11px;">
+            <span><span class="badge badge-blue">normal</span> 通常</span>
+            <span><span class="badge badge-orange">up</span> 強化</span>
+            <span><span class="badge badge-red">max</span> 最大</span>
+            <span style="color:var(--text-sub)">★ = 手動オーバーライド</span>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-header">月</div><div class="cal-header">火</div><div class="cal-header">水</div>
+            <div class="cal-header">木</div><div class="cal-header">金</div><div class="cal-header">土</div><div class="cal-header">日</div>
+
+            <div class="cal-day is-empty"></div>
+            <div class="cal-day is-empty"></div>
+            <div class="cal-day is-empty"></div>
+            <div class="cal-day is-up"><div class="day-num">1</div><div class="day-event">ワンダフル</div><div class="day-strategy"><span class="badge badge-orange">up</span></div><div class="day-budget">¥12,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">2</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">3</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">4</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+
+            <div class="cal-day is-max"><div class="day-num">5</div><div class="day-event">5/0日</div><div class="day-strategy"><span class="badge badge-red">max</span></div><div class="day-budget">¥16,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">6</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">7</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">8</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">9</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-max"><div class="day-num">10</div><div class="day-event">5/0日</div><div class="day-strategy"><span class="badge badge-red">max</span></div><div class="day-budget">¥16,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">11</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+
+            <div class="cal-day is-normal"><div class="day-num">12</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">13</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">14</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-max"><div class="day-num">15</div><div class="day-event">5/0日</div><div class="day-strategy"><span class="badge badge-red">max</span></div><div class="day-budget">¥16,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">16</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">17</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-up"><div class="day-num">18</div><div class="day-event">マラソン開始</div><div class="day-strategy"><span class="badge badge-orange">up</span></div><div class="day-budget">¥12,000</div></div>
+
+            <div class="cal-day is-today is-max"><div class="day-num">19</div><div class="day-event">マラソン+今日</div><div class="day-strategy"><span class="badge badge-red">max ★</span></div><div class="day-budget">¥16,000</div></div>
+            <div class="cal-day is-max"><div class="day-num">20</div><div class="day-event">マラソン+5/0</div><div class="day-strategy"><span class="badge badge-red">max</span></div><div class="day-budget">¥16,000</div></div>
+            <div class="cal-day is-max"><div class="day-num">21</div><div class="day-event">マラソンピーク</div><div class="day-strategy"><span class="badge badge-red">max</span></div><div class="day-budget">¥16,000</div></div>
+            <div class="cal-day is-up"><div class="day-num">22</div><div class="day-event">マラソン後半</div><div class="day-strategy"><span class="badge badge-orange">up</span></div><div class="day-budget">¥12,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">23</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">24</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-max"><div class="day-num">25</div><div class="day-event">5/0日</div><div class="day-strategy"><span class="badge badge-red">max</span></div><div class="day-budget">¥16,000</div></div>
+
+            <div class="cal-day is-normal"><div class="day-num">26</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">27</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">28</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">29</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-max"><div class="day-num">30</div><div class="day-event">5/0日</div><div class="day-strategy"><span class="badge badge-red">max</span></div><div class="day-budget">¥16,000</div></div>
+            <div class="cal-day is-normal"><div class="day-num">31</div><div class="day-strategy"><span class="badge badge-blue">normal</span></div><div class="day-budget">¥8,000</div></div>
+            <div class="cal-day is-empty"></div>
+          </div>
+          <div style="margin-top:12px; padding:10px 14px; background:#f8f9fb; border-radius:6px; font-size:12px; font-weight:600;">
+            当月日予算合計: ¥300,000 ｜ Normal日: ¥8,000/日 ｜ Up日: ¥12,000/日 ｜ Max日: ¥16,000/日
+          </div>
+          <p style="font-size:11px; color:var(--text-sub); margin-top:10px;">日付をクリックして手動オーバーライド（★）を設定できます。autoに戻すには再度クリック。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== Time Slot ==================== -->
+    <div class="section" id="sec-timeslot">
+      <div class="card">
+        <div class="card-header"><h2>時間帯設定</h2></div>
+        <div class="card-body">
+          <div class="timeslot-bar">
+            <div class="ts-morning">0:00 — 12:00（朝〜昼）</div>
+            <div class="ts-afternoon">12:00 — 18:00（昼〜夕）</div>
+            <div class="ts-evening">18:00 — 24:00（夕〜深夜）</div>
+          </div>
+
+          <table class="tbl">
+            <thead><tr><th>時間帯</th><th>開始</th><th>終了</th><th>予算配分</th><th>CPC強化倍率</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>朝〜昼</td>
+                <td><input type="number" value="0" min="0" max="23" style="width:60px"></td>
+                <td><input type="number" value="12" min="1" max="24" style="width:60px"></td>
+                <td><input type="number" value="0.5" step="0.1" min="0.1" style="width:70px"> ×</td>
+                <td><input type="number" value="0.8" step="0.05" min="0.1" style="width:70px"> ×</td>
+              </tr>
+              <tr>
+                <td>昼〜夕</td>
+                <td><input type="number" value="12" min="0" max="23" style="width:60px"></td>
+                <td><input type="number" value="18" min="1" max="24" style="width:60px"></td>
+                <td><input type="number" value="1.0" step="0.1" min="0.1" style="width:70px"> ×</td>
+                <td><input type="number" value="1.0" step="0.05" min="0.1" style="width:70px"> ×</td>
+              </tr>
+              <tr>
+                <td>夕〜深夜</td>
+                <td><input type="number" value="18" min="0" max="23" style="width:60px"></td>
+                <td><input type="number" value="24" min="1" max="24" style="width:60px"></td>
+                <td><input type="number" value="1.5" step="0.1" min="0.1" style="width:70px"> ×</td>
+                <td><input type="number" value="1.2" step="0.05" min="0.1" style="width:70px"> ×</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top:16px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
+            <strong>最終CPC倍率 = 戦略倍率 × CPC強化倍率</strong>
+            <table class="tbl" style="margin-top:8px;">
+              <thead><tr><th></th><th>Normal(1.0)</th><th>Up(1.1)</th><th>Max(1.3)</th></tr></thead>
+              <tbody>
+                <tr><td>朝〜昼(×0.8)</td><td>×0.80</td><td>×0.88</td><td>×1.04</td></tr>
+                <tr><td>昼〜夕(×1.0)</td><td>×1.00</td><td>×1.10</td><td>×1.30</td></tr>
+                <tr><td>夕〜深夜(×1.2)</td><td>×1.20</td><td>×1.32</td><td>×1.56</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer" style="background:#fff; border:1px solid var(--border); border-radius:var(--radius);">
+        <button class="btn btn-outline">リセット</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </div>
+
+    <!-- ==================== Budget ==================== -->
+    <div class="section" id="sec-budget">
+      <div class="card">
+        <div class="card-header"><h2>月予算設定</h2></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>月予算（円）</label>
+              <input type="number" value="300000" min="10000" step="10000">
+            </div>
+            <div class="form-group">
+              <label>最低追加額（円）</label>
+              <input type="number" value="5000" min="5000" step="1000">
+              <span class="hint">RMS制約: 5,000円以上でないと入力不可</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>予算配分倍率（戦略別）</h2></div>
+        <div class="card-body">
+          <p style="font-size:12px; color:var(--text-sub); margin-bottom:12px;">CPC戦略倍率とは別の値。日予算の配分重み付けに使用します。</p>
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label>Normal</label>
+              <input type="number" value="1.0" step="0.1" min="0.1">
+            </div>
+            <div class="form-group">
+              <label>Up</label>
+              <input type="number" value="1.5" step="0.1" min="0.1">
+            </div>
+            <div class="form-group">
+              <label>Max</label>
+              <input type="number" value="2.0" step="0.1" min="0.1">
+            </div>
+          </div>
+
+          <div style="margin-top:16px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
+            <strong>月予算: ¥300,000 / 30日の場合</strong><br>
+            加重合計 = 20日×1.0 + 5日×1.5 + 5日×2.0 = 37.5<br>
+            基準日予算 = 300,000 ÷ 37.5 = ¥8,000<br><br>
+            Normal日: ¥8,000 ｜ Up日: ¥12,000 ｜ Max日: ¥16,000
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>当月ステータス</h2></div>
+        <div class="card-body">
+          <div class="status-bar" style="margin:0;">
+            <div class="status-item"><span class="s-label">月予算</span><span class="s-value">¥300,000</span></div>
+            <div class="status-item"><span class="s-label">累積投入額</span><span class="s-value">¥186,000</span></div>
+            <div class="status-item"><span class="s-label">消化率</span><span class="s-value green">62%</span></div>
+            <div class="status-item"><span class="s-label">繰越残高</span><span class="s-value orange">¥3,200</span></div>
+            <div class="status-item"><span class="s-label">残り日数</span><span class="s-value">12日</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer" style="background:#fff; border:1px solid var(--border); border-radius:var(--radius);">
+        <button class="btn btn-outline">リセット</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </div>
+
+    <!-- ==================== Product Overrides ==================== -->
+    <div class="section" id="sec-overrides">
+      <div class="card">
+        <div class="card-header">
+          <h2>商品別オーバーライド</h2>
+          <button class="btn btn-sm btn-primary">＋ 商品を追加</button>
+        </div>
+        <div class="card-body">
+          <p style="font-size:12px; color:var(--text-sub); margin-bottom:16px;">特定商品に全体と異なる目標ROASやCPC上限を設定。KW単位でもオーバーライド可能。未設定の商品は全体設定（目標ROAS: 500%）が適用されます。</p>
+
+          <div class="override-card">
+            <div class="oc-header">
+              <div>
+                <strong style="font-family:Consolas;">premium_gift_001</strong>
+                <span style="font-size:12px; color:var(--text-sub); margin-left:8px;">高単価ギフト商品</span>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-sm btn-outline">KW追加</button>
+                <button class="btn btn-sm btn-outline" style="color:var(--danger);">削除</button>
+              </div>
+            </div>
+            <div class="form-grid" style="gap:10px;">
+              <div class="form-group">
+                <label>目標ROAS（%）</label>
+                <input type="number" value="300">
+                <span class="hint">全体: 500% → この商品: 300%</span>
+              </div>
+              <div class="form-group">
+                <label>商品CPC上限（円）</label>
+                <input type="number" value="300">
+              </div>
+            </div>
+          </div>
+
+          <div class="override-card">
+            <div class="oc-header">
+              <div>
+                <strong style="font-family:Consolas;">chazuke_5set</strong>
+                <span style="font-size:12px; color:var(--text-sub); margin-left:8px;">お茶漬けセット</span>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-sm btn-outline">KW追加</button>
+                <button class="btn btn-sm btn-outline" style="color:var(--danger);">削除</button>
+              </div>
+            </div>
+            <div class="form-grid" style="gap:10px;">
+              <div class="form-group">
+                <label>目標ROAS（%）</label>
+                <input type="number" value="800">
+                <span class="hint">全体: 500% → この商品: 800%</span>
+              </div>
+              <div class="form-group">
+                <label>商品CPC上限（円）</label>
+                <input type="number" value="200" placeholder="デフォルト">
+              </div>
+            </div>
+            <div class="override-kw">
+              <span style="color:var(--text-sub);">KW:</span>
+              <span style="font-family:Consolas; font-size:12px;">お茶漬け ギフト</span>
+              <span>→ 目標ROAS:</span>
+              <input type="number" value="600" style="width:70px; padding:3px 6px; font-size:12px;">
+              <span>%</span>
+              <button class="btn btn-sm btn-outline" style="color:var(--danger); padding:2px 6px; font-size:10px;">×</button>
+            </div>
+            <div class="override-kw">
+              <span style="color:var(--text-sub);">KW:</span>
+              <span style="font-family:Consolas; font-size:12px;">茶漬け セット</span>
+              <span>→ 目標ROAS:</span>
+              <input type="number" value="1000" style="width:70px; padding:3px 6px; font-size:12px;">
+              <span>%</span>
+              <button class="btn btn-sm btn-outline" style="color:var(--danger); padding:2px 6px; font-size:10px;">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer" style="background:#fff; border:1px solid var(--border); border-radius:var(--radius);">
+        <button class="btn btn-outline">リセット</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </div>
+
+    <!-- ==================== Exclude ==================== -->
+    <div class="section" id="sec-exclude">
+      <div class="card">
+        <div class="card-header">
+          <h2>除外商品</h2>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-sm btn-outline">CSVインポート</button>
+            <button class="btn btn-sm btn-primary">＋ 手動追加</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-label">自動除外を有効にする<small>ROAS 0%が連続N回の商品を自動的に除外CSVに追加します</small></div>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="form-grid" style="margin-top:12px;">
+            <div class="form-group">
+              <label>ROAS 0% 連続除外回数</label>
+              <input type="number" value="3" min="1" max="10">
+              <span class="hint">この回数連続で0%なら除外候補に追加</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>自動除外候補 <span class="badge badge-orange">3件</span></h2>
+        </div>
+        <div class="card-body">
+          <p style="font-size:12px; color:var(--text-sub); margin-bottom:10px;">次回の商品CPC更新時に除外CSVへ追加されます。解除するには「保護」をクリック。</p>
+          <table class="tbl">
+            <thead><tr><th>商品管理番号</th><th>ROAS 0%回数</th><th>クリック数</th><th>最終判定</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span style="font-family:Consolas;">dead_product_A01</span></td>
+                <td><span class="badge badge-red">5回連続</span></td>
+                <td>42</td>
+                <td>5/18 20:00</td>
+                <td><button class="btn btn-sm btn-outline">保護</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:Consolas;">low_cvr_B02</span></td>
+                <td><span class="badge badge-red">3回連続</span></td>
+                <td>28</td>
+                <td>5/19 08:00</td>
+                <td><button class="btn btn-sm btn-outline">保護</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:Consolas;">seasonal_C03</span></td>
+                <td><span class="badge badge-red">3回連続</span></td>
+                <td>15</td>
+                <td>5/19 14:00</td>
+                <td><button class="btn btn-sm btn-outline">保護</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>除外済み商品 <span class="badge badge-blue">12件</span></h2>
+        </div>
+        <div class="card-body">
+          <table class="tbl">
+            <thead><tr><th>商品管理番号</th><th>除外理由</th><th>除外日</th><th></th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:Consolas;">old_item_001</td><td><span class="badge badge-red">自動</span> ROAS 0% × 5回</td><td>5/12</td><td><button class="btn btn-sm btn-outline">解除</button></td></tr>
+              <tr><td style="font-family:Consolas;">old_item_002</td><td><span class="badge badge-red">自動</span> ROAS 0% × 3回</td><td>5/14</td><td><button class="btn btn-sm btn-outline">解除</button></td></tr>
+              <tr><td style="font-family:Consolas;">manual_exclude_003</td><td><span class="badge badge-blue">手動</span> ユーザー指定</td><td>5/01</td><td><button class="btn btn-sm btn-outline">解除</button></td></tr>
+              <tr><td style="font-family:Consolas;">seasonal_old_004</td><td><span class="badge badge-red">自動</span> ROAS 0% × 4回</td><td>5/15</td><td><button class="btn btn-sm btn-outline">解除</button></td></tr>
+            </tbody>
+          </table>
+          <p style="text-align:center; color:var(--text-sub); font-size:12px; margin-top:8px;">他8件...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== URL List ==================== -->
+    <div class="section" id="sec-urllist">
+      <div class="card">
+        <div class="card-header"><h2>URLリスト（優先順位制御）</h2></div>
+        <div class="card-body">
+          <p style="font-size:12px; color:var(--text-sub); margin-bottom:12px;">優先順位: 変更不可 &gt; ホワイト &gt; ブロック &gt; 低ROAS除外 &gt; CPC調整</p>
+
+          <div style="margin-bottom:16px;">
+            <div style="display:flex; align-items: center; justify-content:space-between; margin-bottom:6px;">
+              <strong style="font-size:13px;">🔒 変更不可リスト <span class="badge badge-red">最優先</span></strong>
+              <button class="btn btn-sm btn-outline">＋ 追加</button>
+            </div>
+            <p style="font-size:11px; color:var(--text-sub); margin-bottom:6px;">CPC変更・除外・追加をすべて禁止</p>
+            <div class="excl-item"><span class="excl-id">flagship_product_001</span><span class="excl-reason">看板商品 — CPC固定</span></div>
+            <div class="excl-item"><span class="excl-id">limited_edition_002</span><span class="excl-reason">限定商品 — 手動管理</span></div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <div style="display:flex; align-items: center; justify-content:space-between; margin-bottom:6px;">
+              <strong style="font-size:13px;">🛡 ホワイトリスト</strong>
+              <button class="btn btn-sm btn-outline">＋ 追加</button>
+            </div>
+            <p style="font-size:11px; color:var(--text-sub); margin-bottom:6px;">低ROASでも除外しない。CPC調整は許可</p>
+            <div class="excl-item"><span class="excl-id">new_release_001</span><span class="excl-reason">新商品 — データ蓄積中</span></div>
+          </div>
+
+          <div>
+            <div style="display:flex; align-items: center; justify-content:space-between; margin-bottom:6px;">
+              <strong style="font-size:13px;">🚫 ブロックリスト</strong>
+              <button class="btn btn-sm btn-outline">＋ 追加</button>
+            </div>
+            <p style="font-size:11px; color:var(--text-sub); margin-bottom:6px;">CPC調整より優先して除外対象</p>
+            <div class="excl-item"><span class="excl-id">discontinued_001</span><span class="excl-reason">廃盤商品</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== KW Rules ==================== -->
+    <div class="section" id="sec-kwrules">
+      <div class="card">
+        <div class="card-header"><h2>KW CPC制約</h2></div>
+        <div class="card-body">
+          <div class="toggle-row">
+            <div class="toggle-label">目安CPCキャップを適用<small>KW設定CPCを目安CPC × 戦略倍率以下に制限</small></div>
+            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+
+          <div class="form-grid" style="margin-top:12px;">
+            <div class="form-group">
+              <label>目安CPC取得不可時のフォールバック上限（円）</label>
+              <input type="number" value="300">
+              <span class="hint">目安CPCが取得できないKWに適用する上限</span>
+            </div>
+            <div class="form-group">
+              <label>KW CPC下限: 商品CPC + N円</label>
+              <input type="number" value="1" min="0">
+              <span class="hint">RMS制約: KW CPC ≥ 商品CPC</span>
+            </div>
+          </div>
+
+          <div style="margin-top:16px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
+            <strong>KW CPC 適用順序:</strong><br>
+            ① ROAS達成率判定 → 方向決定<br>
+            ② 戦略倍率 × 時間帯倍率を適用 → 新CPC算出<br>
+            ③ 目安CPCキャップ: min(新CPC, 目安CPC × 戦略倍率 × 時間帯倍率)<br>
+            ④ KW CPC下限: max(結果, 40円, 商品CPC + 1円)<br>
+            ⑤ KW CPCユーザー上限: min(結果, ユーザー上限)
+          </div>
+        </div>
+      </div>
+      <div class="card-footer" style="background:#fff; border:1px solid var(--border); border-radius:var(--radius);">
+        <button class="btn btn-outline">リセット</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+}
+</script>
+</body>
+</html>
