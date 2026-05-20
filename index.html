@@ -152,7 +152,7 @@
 <div class="header">
   <h1>RPP広告運用ツール</h1>
   <span class="store-badge">百福堂（nagara-shop）</span>
-  <span style="margin-left:auto; font-size:12px; opacity:.7;">v3.2</span>
+  <span style="margin-left:auto; font-size:12px; opacity:.7;">v3.3</span>
 </div>
 
 <div class="layout">
@@ -515,13 +515,14 @@
           </table>
 
           <div style="margin-top:16px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
-            <strong>最終CPC倍率 = 戦略倍率 × CPC強化倍率</strong>
+            <strong>天井方式: 最終CPC倍率 = 戦略倍率 × (時間帯倍率 ÷ max時間帯倍率)</strong>
+            <p style="margin:6px 0 8px; color:var(--text-sub); font-size:11px;">戦略倍率がCPC調整の最大値（天井）。ピーク時間帯で戦略倍率がそのまま適用され、他は比例して抑制。</p>
             <table class="tbl" style="margin-top:8px;">
-              <thead><tr><th></th><th>Normal(1.0)</th><th>Up(1.1)</th><th>Max(1.3)</th></tr></thead>
+              <thead><tr><th></th><th>正規化倍率</th><th>Normal(1.0)</th><th>Up(1.1)</th><th>Max(1.3)</th></tr></thead>
               <tbody>
-                <tr><td>朝〜昼(×0.8)</td><td>×0.80</td><td>×0.88</td><td>×1.04</td></tr>
-                <tr><td>昼〜夕(×1.0)</td><td>×1.00</td><td>×1.10</td><td>×1.30</td></tr>
-                <tr><td>夕〜深夜(×1.2)</td><td>×1.20</td><td>×1.32</td><td>×1.56</td></tr>
+                <tr><td>朝〜昼(×0.8)</td><td>0.8/1.2=0.67</td><td>×0.67</td><td>×0.73</td><td>×0.87</td></tr>
+                <tr><td>昼〜夕(×1.0)</td><td>1.0/1.2=0.83</td><td>×0.83</td><td>×0.92</td><td>×1.08</td></tr>
+                <tr><td>夕〜深夜(×1.2)</td><td>1.2/1.2=1.00</td><td>×1.00</td><td>×1.10</td><td style="font-weight:700; color:var(--danger);">×1.30 ← 天井</td></tr>
               </tbody>
             </table>
           </div>
@@ -824,8 +825,8 @@
           <div style="margin-top:16px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
             <strong>KW CPC 適用順序:</strong><br>
             ① ROAS達成率判定 → 方向決定<br>
-            ② 戦略倍率 × 時間帯倍率を適用 → 新CPC算出<br>
-            ③ 目安CPCキャップ: min(新CPC, 目安CPC × 戦略倍率 × 時間帯倍率)<br>
+            ② 戦略倍率 × 正規化時間帯倍率を適用 → 新CPC算出<br>
+            ③ 目安CPCキャップ: min(新CPC, 目安CPC × 戦略倍率 × 正規化時間帯倍率)<br>
             ④ KW CPC下限: max(結果, 40円, 商品CPC + 1円)<br>
             ⑤ KW CPCユーザー上限: min(結果, ユーザー上限)
           </div>
