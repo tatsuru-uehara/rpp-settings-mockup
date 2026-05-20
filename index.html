@@ -152,7 +152,7 @@
 <div class="header">
   <h1>RPP広告運用ツール</h1>
   <span class="store-badge">百福堂（nagara-shop）</span>
-  <span style="margin-left:auto; font-size:12px; opacity:.7;">v3.3</span>
+  <span style="margin-left:auto; font-size:12px; opacity:.7;">v3.4</span>
 </div>
 
 <div class="layout">
@@ -170,7 +170,7 @@
     <div class="nav-group">
       <div class="nav-group-label">スケジュール</div>
       <a class="nav-item" onclick="showSection('calendar')" id="nav-calendar">戦略カレンダー</a>
-      <a class="nav-item" onclick="showSection('timeslot')" id="nav-timeslot">時間帯設定</a>
+      <a class="nav-item" onclick="showSection('timeslot')" id="nav-timeslot">時間帯CPC設定</a>
     </div>
     <div class="nav-group">
       <div class="nav-group-label">予算</div>
@@ -178,7 +178,7 @@
     </div>
     <div class="nav-group">
       <div class="nav-group-label">商品・KW管理</div>
-      <a class="nav-item" onclick="showSection('overrides')" id="nav-overrides">商品別オーバーライド</a>
+      <a class="nav-item" onclick="showSection('overrides')" id="nav-overrides">商品別設定</a>
       <a class="nav-item" onclick="showSection('exclude')" id="nav-exclude">除外商品</a>
       <a class="nav-item" onclick="showSection('urllist')" id="nav-urllist">URLリスト</a>
     </div>
@@ -479,7 +479,7 @@
     <!-- ==================== Time Slot ==================== -->
     <div class="section" id="sec-timeslot">
       <div class="card">
-        <div class="card-header"><h2>時間帯設定</h2></div>
+        <div class="card-header"><h2>時間帯CPC設定</h2></div>
         <div class="card-body">
           <div class="timeslot-bar">
             <div class="ts-morning">0:00 — 12:00（朝〜昼）</div>
@@ -488,31 +488,29 @@
           </div>
 
           <table class="tbl">
-            <thead><tr><th>時間帯</th><th>開始</th><th>終了</th><th>予算配分</th><th>CPC強化倍率</th></tr></thead>
+            <thead><tr><th>時間帯</th><th>開始</th><th>終了</th><th>CPC倍率</th></tr></thead>
             <tbody>
               <tr>
                 <td>朝〜昼</td>
                 <td><input type="number" value="0" min="0" max="23" style="width:60px"></td>
                 <td><input type="number" value="12" min="1" max="24" style="width:60px"></td>
-                <td><input type="number" value="0.5" step="0.1" min="0.1" style="width:70px"> ×</td>
                 <td><input type="number" value="0.8" step="0.05" min="0.1" style="width:70px"> ×</td>
               </tr>
               <tr>
                 <td>昼〜夕</td>
                 <td><input type="number" value="12" min="0" max="23" style="width:60px"></td>
                 <td><input type="number" value="18" min="1" max="24" style="width:60px"></td>
-                <td><input type="number" value="1.0" step="0.1" min="0.1" style="width:70px"> ×</td>
                 <td><input type="number" value="1.0" step="0.05" min="0.1" style="width:70px"> ×</td>
               </tr>
               <tr>
                 <td>夕〜深夜</td>
                 <td><input type="number" value="18" min="0" max="23" style="width:60px"></td>
                 <td><input type="number" value="24" min="1" max="24" style="width:60px"></td>
-                <td><input type="number" value="1.5" step="0.1" min="0.1" style="width:70px"> ×</td>
                 <td><input type="number" value="1.2" step="0.05" min="0.1" style="width:70px"> ×</td>
               </tr>
             </tbody>
           </table>
+          <p style="font-size:11px; color:var(--text-sub); margin-top:8px;">RPPは時間帯別の予算設定ができないため、CPC倍率の強弱で配信量を間接制御します。</p>
 
           <div style="margin-top:16px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
             <strong>天井方式: 最終CPC倍率 = 戦略倍率 × (時間帯倍率 ÷ max時間帯倍率)</strong>
@@ -604,11 +602,11 @@
     <div class="section" id="sec-overrides">
       <div class="card">
         <div class="card-header">
-          <h2>商品別オーバーライド</h2>
+          <h2>商品別設定</h2>
           <button class="btn btn-sm btn-primary">＋ 商品を追加</button>
         </div>
         <div class="card-body">
-          <p style="font-size:12px; color:var(--text-sub); margin-bottom:16px;">特定商品に全体と異なる目標ROASやCPC上限を設定。KW単位でもオーバーライド可能。未設定の商品は全体設定（目標ROAS: 500%）が適用されます。</p>
+          <p style="font-size:12px; color:var(--text-sub); margin-bottom:16px;">特定商品に全体と異なる目標ROASやCPC上限を設定。KW単位でも個別設定可能。未設定の商品は全体設定（目標ROAS: 500%）が適用されます。</p>
 
           <div class="override-card">
             <div class="oc-header">
