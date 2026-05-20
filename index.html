@@ -182,10 +182,6 @@
       <a class="nav-item" onclick="showSection('exclude')" id="nav-exclude">除外商品</a>
       <a class="nav-item" onclick="showSection('urllist')" id="nav-urllist">URLリスト</a>
     </div>
-    <div class="nav-group">
-      <div class="nav-group-label">KWルール</div>
-      <a class="nav-item" onclick="showSection('kwrules')" id="nav-kwrules">KW CPC制約</a>
-    </div>
   </div>
 
   <!-- Main content -->
@@ -794,45 +790,6 @@
             <div class="excl-item"><span class="excl-id">discontinued_001</span><span class="excl-reason">廃盤商品</span></div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- ==================== KW Rules ==================== -->
-    <div class="section" id="sec-kwrules">
-      <div class="card">
-        <div class="card-header"><h2>KW CPC制約</h2></div>
-        <div class="card-body">
-          <div class="toggle-row">
-            <div class="toggle-label">目安CPCキャップを適用<small>KW設定CPCを目安CPC × 戦略倍率以下に制限</small></div>
-            <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
-          </div>
-
-          <div class="form-grid" style="margin-top:12px;">
-            <div class="form-group">
-              <label>目安CPC取得不可時のフォールバック上限（円）</label>
-              <input type="number" value="300">
-              <span class="hint">目安CPCが取得できないKWに適用する上限</span>
-            </div>
-            <div class="form-group">
-              <label>KW CPC下限: 商品CPC + N円</label>
-              <input type="number" value="1" min="0">
-              <span class="hint">RMS制約: KW CPC ≥ 商品CPC</span>
-            </div>
-          </div>
-
-          <div style="margin-top:16px; padding:12px; background:#f8f9fb; border-radius:6px; font-size:12px;">
-            <strong>KW CPC 適用順序:</strong><br>
-            ① ROAS達成率判定 → 方向決定<br>
-            ② 戦略倍率 × 正規化時間帯倍率を適用 → 新CPC算出<br>
-            ③ 目安CPCキャップ: min(新CPC, 目安CPC × 戦略倍率 × 正規化時間帯倍率)<br>
-            ④ KW CPC下限: max(結果, 40円, 商品CPC + 1円)<br>
-            ⑤ KW CPCユーザー上限: min(結果, ユーザー上限)
-          </div>
-        </div>
-      </div>
-      <div class="card-footer" style="background:#fff; border:1px solid var(--border); border-radius:var(--radius);">
-        <button class="btn btn-outline">リセット</button>
-        <button class="btn btn-primary">保存</button>
       </div>
     </div>
 
